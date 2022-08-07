@@ -1,0 +1,48 @@
+﻿@page
+@model RepartitionTournoi.Presentation.Web.Pages.Joueurs.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Joueurs[0].Nom)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Joueurs[0].Prénom)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Joueurs[0].Téléphone)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Joueurs) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Prénom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Téléphone)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
