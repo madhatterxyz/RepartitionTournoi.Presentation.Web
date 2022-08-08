@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Remove="Pages\NewFolder\**" />
     <Content Remove="Pages\NewFolder\**" />
     <EmbeddedResource Remove="Pages\NewFolder\**" />
@@ -19,6 +20,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+=======
+    <Folder Include="Pages\Jeux\" />
+    <Folder Include="Pages\Mecaniques\" />
+    <Folder Include="Pages\Matchs\" />
+    <Folder Include="Pages\Tournois\" />
+  </ItemGroup>
+
+  <ItemGroup>
+>>>>>>> a308204964aefca51c0fa08b72372dbb5aafa0c5
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.7" />
     <PackageReference Include="RestSharp" Version="108.0.1" />
   </ItemGroup>
