@@ -1,0 +1,58 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using RepartitionTournoi.Models;
+using RepartitionTournoi.Presentation.Web.Services.Interfaces;
+
+namespace RepartitionTournoi.Presentation.Web.Pages.Jeux
+{
+    public class DeleteModel : PageModel
+    {
+        private readonly IJeuServices _services;
+
+        public DeleteModel(IJeuServices services)
+        {
+            _services = services;
+        }
+
+        [BindProperty]
+        public JeuDTO JeuDTO { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync(long? id)
+        {
+            /*if (id == null || _context.JeuDTO == null)
+            {
+                return NotFound();
+            }
+
+            var jeudto = await _context.JeuDTO.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (jeudto == null)
+            {
+                return NotFound();
+            }
+            else 
+            {
+                JeuDTO = jeudto;
+            }*/
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(long? id)
+        {
+            /*if (id == null || _context.JeuDTO == null)
+            {
+                return NotFound();
+            }
+            var jeudto = await _context.JeuDTO.FindAsync(id);
+
+            if (jeudto != null)
+            {
+                JeuDTO = jeudto;
+                _context.JeuDTO.Remove(JeuDTO);
+                await _context.SaveChangesAsync();
+            }*/
+
+            return RedirectToPage("./Index");
+        }
+    }
+}

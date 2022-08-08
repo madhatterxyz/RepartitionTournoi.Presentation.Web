@@ -1,11 +1,13 @@
-using RepartitionTournoi.Presentation.Web.Services;
+﻿using RepartitionTournoi.Presentation.Web.Services;
 using RepartitionTournoi.Presentation.Web.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddScoped<ITournoiServices, TournoiServices>();
 builder.Services.AddScoped<IJoueurServices, JoueurServices>();
+builder.Services.AddScoped<IJeuServices, JeuServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
