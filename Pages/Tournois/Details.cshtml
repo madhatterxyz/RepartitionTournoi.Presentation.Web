@@ -1,51 +1,79 @@
 ﻿@page
 @model RepartitionTournoi.Presentation.Web.Pages.Tournois.DetailsModel
-
+@using System.Linq;
 @{
     ViewData["Title"] = "Details";
     string currentNomJeu = string.Empty;
+    string currentNomMatch = string.Empty;
 }
 
-<h1>Details</h1>
-
 <div>
-    <h4>Tournoi</h4>
+    <h3><a asp-page="./Details" asp-route-id="@Model.TournoiDTO?.Id">Tournoi @Model.TournoiDTO.Nom</a></h3>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TournoiDTO.Nom)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TournoiDTO.Nom)
-        </dd>
-    </dl>
-    @foreach (var item in Model.TournoiDTO.Compositions)
-    {
-        @if (currentNomJeu!=item.Jeu.Nom)
-        {
-            <div class="row">
-                <div class="col-md-2">
-                    <h1>@Html.DisplayFor(modelItem => item.Jeu.Nom)</h1>
-                </div>
-            </div>
-            currentNomJeu = item.Jeu.Nom;
-        }
-        <div class="row">
-            <div class="offset-2 col-md-2">
-                <h2>@Html.DisplayFor(modelItem => item.Match.Nom)</h2>
-            </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <h4>Récapitulatif</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Jeu</th>
+                        <th>Matchs</th>
+                        <th>Joueur</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TournoiDTO.Compositions)
+                    {
+                        foreach (var score in item.Match.Scores)
+                        {
+                            <tr>
+                                @if (currentNomJeu != item.Jeu.Nom)
+                                {
+                                    int nbRowSpan = Model.TournoiDTO.Compositions.Where(x => x.JeuId == item.JeuId).SelectMany(x => x.Match.Scores).Count();
+                                    <td rowspan="@nbRowSpan"><h1>@item.Jeu.Nom</h1></td>
+                                    currentNomJeu = item.Jeu.Nom;
+                                }
+                                @if (currentNomMatch != item.Match.Nom)
+                                {
+                                    <td rowspan="@item.Match.Scores.Count()"><h2>@item.Match.Nom</h2></td>
+                                    currentNomMatch = item.Match.Nom;
+                                }
+                                <td>
+                                    <a asp-page="./Details" asp-route-id="@Model.TournoiDTO?.Id" asp-route-joueurId="@score.Joueur.Id">
+                                    @Html.DisplayFor(modelItem => score.Joueur.Nom)
+                                    @Html.DisplayFor(modelItem => score.Joueur.Prénom)
+                                    @Html.DisplayFor(modelItem => score.Joueur.Téléphone)</a>
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => score.Points)</td>
+                            </tr>
+                        }
+                        currentNomMatch = null;
+                    }
+                </tbody>
+            </table>
         </div>
-        @foreach (var match in item.Match.Scores)
-        {
-            <div class="row">
-                <div class="offset-4 col-md-2">
-                    @Html.DisplayFor(modelItem => match.Joueur.Nom)
-                    @Html.DisplayFor(modelItem => match.Joueur.Prénom)
-                    @Html.DisplayFor(modelItem => match.Joueur.Téléphone)
-                </div>
-            </div>
-        }
-    }
+        <div class="col-lg-4">
+            <h4>Classement</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Joueur</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var classement in Model.Classements)
+                    {
+                        <tr>
+                            <td>@classement.Key</td>
+                            <td>@classement.Value</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.TournoiDTO?.Id">Edit</a> |

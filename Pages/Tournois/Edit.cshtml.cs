@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using RepartitionTournoi.Models;
 using RepartitionTournoi.Presentation.Web.Services.Interfaces;
 

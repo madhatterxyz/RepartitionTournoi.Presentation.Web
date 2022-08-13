@@ -5,14 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-<<<<<<< HEAD
 builder.Services.AddScoped<ITournoiServices, TournoiServices>();
 builder.Services.AddScoped<IJoueurServices, JoueurServices>();
 builder.Services.AddScoped<IJeuServices, JeuServices>();
-=======
-builder.Services.AddScoped<IJoueurServices, JoueurServices>();
-
->>>>>>> a308204964aefca51c0fa08b72372dbb5aafa0c5
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
