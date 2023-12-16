@@ -20,18 +20,18 @@ namespace RepartitionTournoi.Presentation.Web.Pages.Tournois
         }
 
         [BindProperty]
-        public TournoiDTO TournoiDTO { get; set; } = default!;
+        public string Nom { get; set; } = default!;
 
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid || TournoiDTO == null)
+            if (!ModelState.IsValid || string.IsNullOrEmpty(Nom))
             {
                 return Page();
             }
 
-            await _services.Create(TournoiDTO);
+            await _services.Create(Nom);
 
             return RedirectToPage("./Index");
         }

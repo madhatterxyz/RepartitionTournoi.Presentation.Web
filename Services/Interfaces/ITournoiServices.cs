@@ -1,4 +1,4 @@
-﻿using RepartitionTournoi.Models;
+﻿using RepartitionTournoi.Models.Tournoi;
 
 namespace RepartitionTournoi.Presentation.Web.Services.Interfaces
 {
@@ -6,6 +6,7 @@ namespace RepartitionTournoi.Presentation.Web.Services.Interfaces
     {
         Task<List<TournoiDTO>> GetAll();
         Task<TournoiDTO> GetById(long id);
-        Task<TournoiDTO> Create(TournoiDTO tournoiDTO);
+        Task<TournoiDTO> Create(string nom);
+        Task Update(EditTournoiDTO tournoiDTO);
     }
 }

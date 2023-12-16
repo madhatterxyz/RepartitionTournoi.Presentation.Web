@@ -1,24 +1,28 @@
 ﻿@page
 @model RepartitionTournoi.Presentation.Web.Pages.Tournois.DetailsModel
 @using System.Linq;
+@using System.Web
 @{
     ViewData["Title"] = "Details";
     string currentNomJeu = string.Empty;
     string currentNomMatch = string.Empty;
+    int nbMatchFinis = Model.TournoiDTO.Compositions.Count(x => x.Match.DateFin != null);
+    int nbMatchs = Model.TournoiDTO.Compositions.Count();
+    var progressionTournoi = nbMatchFinis * 100 / nbMatchs;
 }
 
 <div>
     <h3><a asp-page="./Details" asp-route-id="@Model.TournoiDTO?.Id">Tournoi @Model.TournoiDTO.Nom</a></h3>
     <hr />
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <h4>Récapitulatif</h4>
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Jeu</th>
-                        <th>Matchs</th>
-                        <th>Joueur</th>
+                        <th>Jeu <span class="oi oi-puzzle-piece"></span></th>
+                        <th>Matchs <span class="oi oi-people"></span></th>
+                        <th>Joueur <span class="oi oi-person"></span></th>
                         <th>Points</th>
                     </tr>
                 </thead>
@@ -31,21 +35,33 @@
                                 @if (currentNomJeu != item.Jeu.Nom)
                                 {
                                     int nbRowSpan = Model.TournoiDTO.Compositions.Where(x => x.JeuId == item.JeuId).SelectMany(x => x.Match.Scores).Count();
-                                    <td rowspan="@nbRowSpan"><h1>@item.Jeu.Nom</h1></td>
+                                    <td rowspan="@nbRowSpan">
+                                        <h2>@item.Jeu.Nom</h2>
+                                        @if (Model.TournoiDTO.Compositions.Where(x => x.JeuId == item.JeuId).All(x => x.Match.DateFin != null))
+                                        {
+                                            <span class="oi oi-circle-check green"></span>
+                                        }
+                                    </td>
                                     currentNomJeu = item.Jeu.Nom;
                                 }
                                 @if (currentNomMatch != item.Match.Nom)
                                 {
-                                    <td rowspan="@item.Match.Scores.Count()"><h2>@item.Match.Nom</h2></td>
+                                    <td rowspan="@item.Match.Scores.Count()">
+                                        <h4><a asp-page="/Matchs/Edit" asp-route-id="@item.Match?.Id">@item.Match.Nom</a></h4>
+                                        @if (item.Match.DateFin != null)
+                                        {
+                                            <span class="oi oi-circle-check green"></span>
+                                        }
+                                    </td>
                                     currentNomMatch = item.Match.Nom;
                                 }
                                 <td>
                                     <a asp-page="./Details" asp-route-id="@Model.TournoiDTO?.Id" asp-route-joueurId="@score.Joueur.Id">
-                                    @Html.DisplayFor(modelItem => score.Joueur.Nom)
-                                    @Html.DisplayFor(modelItem => score.Joueur.Prénom)
-                                    @Html.DisplayFor(modelItem => score.Joueur.Téléphone)</a>
+                                        @Html.DisplayFor(modelItem => score.Joueur.Nom)
+                                        @Html.DisplayFor(modelItem => score.Joueur.Prenom)
+                                    </a>
                                 </td>
-                                <td>@Html.DisplayFor(modelItem => score.Points)</td>
+                                <td><a asp-page="/Scores/Edit" asp-route-matchId="@item.Match?.Id" asp-route-joueurId="@score.Joueur?.Id">@Html.DisplayFor(modelItem => score.Points)</a></td>
                             </tr>
                         }
                         currentNomMatch = null;
@@ -53,25 +69,46 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-lg-4">
-            <h4>Classement</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Joueur</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var classement in Model.Classements)
-                    {
-                        <tr>
-                            <td>@classement.Key</td>
-                            <td>@classement.Value</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="col-lg-5">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4>Classement</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Joueur</th>
+                                <th>Points</th>
+                                <th>Progression</th>
+                                <th>Nombre victoires <span class="oi oi-star"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var classement in Model.Classements)
+                            {
+                                <tr>
+                                    <td>@classement.Joueur</td>
+                                    <td>@classement.Points</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: @classement.Progression%" aria-valuenow="@classement.Progression" aria-valuemin="0" aria-valuemax="100"> @classement.Progression %</div>
+                                        </div>
+                                    </td>
+                                    <td>@classement.NbVictoires</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4>Avancement</h4>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped" role="progressbar" style="width: @progressionTournoi%" aria-valuenow="@progressionTournoi" aria-valuemin="0" aria-valuemax="100">@progressionTournoi %</div>
+                    </div>
+                </div>
+            </div>
+            <div id="graph" style="height: 250px;"></div>
         </div>
     </div>
 </div>
@@ -79,3 +116,15 @@
     <a asp-page="./Edit" asp-route-id="@Model.TournoiDTO?.Id">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
+<script>
+
+    var week_data = @Html.Raw(Model.BurndownChartLines);
+    Morris.Line({
+        element: 'graph',
+        data: week_data,
+        xkey: 'period',
+        lineColors: ['blue', 'green'],
+        ykeys: ['expected', 'actual'],
+        labels: ['Attendu', 'Courant']
+    });
+</script>

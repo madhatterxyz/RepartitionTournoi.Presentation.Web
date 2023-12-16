@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using RepartitionTournoi.Models;
+using RepartitionTournoi.Models.Tournoi;
 using RepartitionTournoi.Presentation.Web.Services.Interfaces;
 
 namespace RepartitionTournoi.Presentation.Web.Pages.Tournois

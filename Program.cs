@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<ITournoiServices, TournoiServices>();
+builder.Services.AddScoped<IScoreServices, ScoreServices>();
+builder.Services.AddScoped<IMatchServices, MatchServices>();
 builder.Services.AddScoped<IJoueurServices, JoueurServices>();
 builder.Services.AddScoped<IJeuServices, JeuServices>();
 var app = builder.Build();
