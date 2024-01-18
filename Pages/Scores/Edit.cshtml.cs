@@ -1,50 +1,47 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RepartitionTournoi.Models.Scores;
-using RepartitionTournoi.Presentation.Web.Services;
 using RepartitionTournoi.Presentation.Web.Services.Interfaces;
 
-namespace RepartitionTournoi.Presentation.Web.Pages.Scores
+namespace RepartitionTournoi.Presentation.Web.Pages.Scores;
+
+public class EditModel : PageModel
 {
-    public class EditModel : PageModel
+    private readonly IScoreServices _services;
+    private readonly ITournoiServices _tournoiServices;
+
+    public EditModel(IScoreServices services, ITournoiServices tournoiServices)
     {
-        private readonly IScoreServices _services;
+        _services = services;
+        _tournoiServices = tournoiServices;
+    }
 
-        public EditModel(IScoreServices services)
+    [BindProperty]
+    public ScoreDTO Score { get; set; } = default!;
+
+    public async Task<IActionResult> OnGetAsync(long? matchId, long? joueurId)
+    {
+        Score = await _services.GetById((long)matchId, (long)joueurId);
+        if (Score == null)
         {
-            _services = services;
+            return NotFound();
         }
+        return Page();
+    }
 
-        [BindProperty]
-        public ScoreDTO Score { get; set; } = default!;
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task<IActionResult> OnPostAsync()
+    {
 
-        public async Task<IActionResult> OnGetAsync(long? matchId, long? joueurId)
+        if (!ModelState.IsValid)
         {
-            Score = await _services.GetById((long)matchId, (long)joueurId);
-            if (Score == null)
-            {
-                return NotFound();
-            }
             return Page();
         }
+        var tournois = await _tournoiServices.GetAll();
+        var tournoi = tournois.FirstOrDefault(x=>x.Compositions.Any(y=>y.MatchId == Score.MatchId));
+        await _services.Update(Score);
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
-        {
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-            await _services.Update(Score);
-
-            return RedirectToPage("/Tournois/Index");
-        }
-
-        private bool TournoiDTOExists(long id)
-        {
-            return true;// (_context.TournoiDTO?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        return RedirectToPage($"/Tournois/Details/{tournoi.Id}");
     }
 }

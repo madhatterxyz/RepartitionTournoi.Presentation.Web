@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Pages\Jeux\" />
     <Folder Include="Pages\Mecaniques\" />
-    <Folder Include="Pages\Tournois\" />
   </ItemGroup>
 
   <ItemGroup>

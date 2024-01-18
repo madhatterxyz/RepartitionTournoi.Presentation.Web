@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using RepartitionTournoi.Models;
 using RepartitionTournoi.Models.Tournoi;
@@ -19,6 +20,10 @@ namespace RepartitionTournoi.Presentation.Web.Pages.Tournois
             _matchServices = matchServices;
             Classements = new List<Statistics>();
         }
+        [BindProperty]
+        public List<long> SelectedPlayers { get; set; }
+
+        public List<SelectListItem> PlayersAvailable { get; set; }
         public int TournoiProgress { get; set; }
         public TournoiDTO TournoiDTO { get; set; } = default!;
         public List<Statistics> Classements { get; set; }
@@ -68,6 +73,30 @@ namespace RepartitionTournoi.Presentation.Web.Pages.Tournois
             Classements = Classements.OrderByDescending(x => x.Points).ToList();
             var burndownChartLines = await _matchServices.GetBurndownChartLines((int)id);
             BurndownChartLines = JsonConvert.SerializeObject(burndownChartLines);
+            PlayersAvailable = TournoiDTO.Compositions.SelectMany(x => x.Match.Scores.Select(x => x.Joueur)).Distinct().Select(x => new SelectListItem() { Text = $"{x.Nom} {x.Prenom}", Value = x.Id.ToString() }).ToList();
+            return Page();
+        }
+        public async Task<IActionResult> OnPostAsync(long id)
+        {
+            TournoiDTO = await _services.GetById((long)id);
+            List<CompositionDTO> compositionFiltered = new List<CompositionDTO>();
+            foreach (var compo in TournoiDTO.Compositions.Where(x => x.Match.DateFin == null))
+            {
+                bool allPresent = true;
+                foreach (var score in compo.Match.Scores)
+                {
+                    if (!SelectedPlayers.Contains(score.Joueur.Id))
+                    {
+                        allPresent = false;
+                        break;
+                    }
+                }
+                if (allPresent)
+                    compositionFiltered.Add(compo);
+            }
+            TournoiDTO.Compositions = compositionFiltered;
+
+            PlayersAvailable = (await _services.GetById((long)id)).Compositions.SelectMany(x => x.Match.Scores.Select(x => x.Joueur)).Distinct().Select(x => new SelectListItem() { Text = $"{x.Nom} {x.Prenom}", Value = x.Id.ToString() }).ToList();
             return Page();
         }
     }
@@ -81,7 +110,7 @@ namespace RepartitionTournoi.Presentation.Web.Pages.Tournois
     public class BurndownChartLine
     {
         public string period { get; set; }
-        public int expected { get; set; }
+        public double expected { get; set; }
         public int? actual { get; set; }
     }
 }

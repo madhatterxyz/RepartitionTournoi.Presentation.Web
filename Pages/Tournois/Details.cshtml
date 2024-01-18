@@ -15,13 +15,42 @@
     <h3><a asp-page="./Details" asp-route-id="@Model.TournoiDTO?.Id">Tournoi @Model.TournoiDTO.Nom</a></h3>
     <hr />
     <div class="row">
+        <div class="col-lg-12">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Filtres
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <form method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-group">
+                                    <label asp-for="SelectedPlayers" class="control-label">Joueurs disponibles</label>
+                                    <select asp-for="SelectedPlayers" class="control-label" multiple>
+                                        @foreach (var player in Model.PlayersAvailable)
+                                        {
+                                            <option value="@player.Value">@player.Text</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="SelectedPlayers" class="text-danger"></span>
+                                    <input type="submit" value="Filtrer" class="btn btn-primary" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-lg-7">
             <h4>Récapitulatif</h4>
             <table class="table">
                 <thead>
                     <tr>
                         <th>Jeu <span class="oi oi-puzzle-piece"></span></th>
-                        <th>Matchs <span class="oi oi-people"></span></th>
+                        <th style="width:150px">Matchs <span class="oi oi-people"></span></th>
                         <th>Joueur <span class="oi oi-person"></span></th>
                         <th>Points</th>
                     </tr>
@@ -36,7 +65,7 @@
                                 {
                                     int nbRowSpan = Model.TournoiDTO.Compositions.Where(x => x.JeuId == item.JeuId).SelectMany(x => x.Match.Scores).Count();
                                     <td rowspan="@nbRowSpan">
-                                        <h2>@item.Jeu.Nom</h2>
+                                        <h4>@item.Jeu.Nom</h4>
                                         @if (Model.TournoiDTO.Compositions.Where(x => x.JeuId == item.JeuId).All(x => x.Match.DateFin != null))
                                         {
                                             <span class="oi oi-circle-check green"></span>
