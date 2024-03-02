@@ -1,4 +1,5 @@
 ﻿using RepartitionTournoi.Models;
+using RepartitionTournoi.Models.Tournoi;
 using RepartitionTournoi.Presentation.Web.Pages.Tournois;
 using RepartitionTournoi.Presentation.Web.Services.Interfaces;
 using RestSharp;
@@ -13,9 +14,9 @@ namespace RepartitionTournoi.Presentation.Web.Services
             _restClient = new RestClient(configuration["AppSettings:ServicesURL"]);
         }
 
-        public async Task<List<BurndownChartLine>> GetBurndownChartLines(int tournoiId)
+        public async Task<List<BurndownChartLine>> GetBurndownChartLines(long tournoiId, long? joueurId)
         {
-            var request = new RestRequest($"Matchs/BurndownChartLines/{tournoiId}");
+            var request = new RestRequest($"Matchs/BurndownChartLines/{tournoiId}?joueurId={joueurId}");
             var response = await _restClient.ExecuteGetAsync<List<BurndownChartLine>>(request);
             return response.Data;
         }
@@ -30,7 +31,13 @@ namespace RepartitionTournoi.Presentation.Web.Services
         {
             var request = new RestRequest($"Matchs", Method.Put);
             request.AddBody(matchDTO);
-            var response = await _restClient.ExecutePutAsync(request);
+            await _restClient.ExecutePutAsync(request);
+        }
+        public async Task<TournoiDTO> GetByMatchId(long matchId)
+        {
+            var request = new RestRequest($"Matchs/{matchId}/Tournoi");
+            var response = await _restClient.ExecuteAsync<TournoiDTO>(request);
+            return response.Data;
         }
     }
 }

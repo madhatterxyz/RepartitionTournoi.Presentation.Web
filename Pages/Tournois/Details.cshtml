@@ -152,8 +152,12 @@
         element: 'graph',
         data: week_data,
         xkey: 'period',
+        xLabels : 'week',
+        xLabelAngle : 45,
         lineColors: ['blue', 'green'],
         ykeys: ['expected', 'actual'],
-        labels: ['Attendu', 'Courant']
+        labels: ['Attendu', 'Courant'],
+        ymin : 0,
+        ymax: @Html.Raw(Model.BurndownChartYMax)
     });
 </script>

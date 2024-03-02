@@ -9,11 +9,13 @@ public class EditModel : PageModel
 {
     private readonly IScoreServices _services;
     private readonly ITournoiServices _tournoiServices;
+    private readonly IMatchServices _matchServices;
 
-    public EditModel(IScoreServices services, ITournoiServices tournoiServices)
+    public EditModel(IScoreServices services, ITournoiServices tournoiServices, IMatchServices matchServices)
     {
         _services = services;
         _tournoiServices = tournoiServices;
+        _matchServices = matchServices;
     }
 
     [BindProperty]
@@ -38,10 +40,10 @@ public class EditModel : PageModel
         {
             return Page();
         }
-        var tournois = await _tournoiServices.GetAll();
-        var tournoi = tournois.FirstOrDefault(x=>x.Compositions.Any(y=>y.MatchId == Score.MatchId));
+        var tournoi = await _matchServices.GetByMatchId(Score.MatchId);
+
         await _services.Update(Score);
 
-        return RedirectToPage($"/Tournois/Details/{tournoi.Id}");
+        return RedirectToPage($"/Tournois/Details", new {id = tournoi.Id});
     }
 }

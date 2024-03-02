@@ -28,15 +28,12 @@ namespace RepartitionTournoi.Presentation.Web.Pages.Tournois
         public TournoiDTO TournoiDTO { get; set; } = default!;
         public List<Statistics> Classements { get; set; }
         public string BurndownChartLines { get; set; }
+        public int BurndownChartYMax { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(long? id, long? joueurId)
+        public async Task<IActionResult> OnGetAsync(long id, long? joueurId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            TournoiDTO tournoidto = await _services.GetById((long)id);
+            TournoiDTO tournoidto = await _services.GetById(id);
             if (tournoidto == null)
             {
                 return NotFound();
@@ -71,8 +68,9 @@ namespace RepartitionTournoi.Presentation.Web.Pages.Tournois
                 }
             }
             Classements = Classements.OrderByDescending(x => x.Points).ToList();
-            var burndownChartLines = await _matchServices.GetBurndownChartLines((int)id);
+            var burndownChartLines = await _matchServices.GetBurndownChartLines(id, joueurId);
             BurndownChartLines = JsonConvert.SerializeObject(burndownChartLines);
+            BurndownChartYMax = tournoidto.Compositions.Count();
             PlayersAvailable = TournoiDTO.Compositions.SelectMany(x => x.Match.Scores.Select(x => x.Joueur)).Distinct().Select(x => new SelectListItem() { Text = $"{x.Nom} {x.Prenom}", Value = x.Id.ToString() }).ToList();
             return Page();
         }
